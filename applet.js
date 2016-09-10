@@ -188,67 +188,67 @@ MyApplet.prototype = {
     
     
     doTimePreset240: function() {
-                this.timerDuration = 240;
+                this.timerDuration = 240 * 60;
                 this.doStartTimer();
     },
     
     doTimePreset180: function() {
-                this.timerDuration = 180;
+                this.timerDuration = 180 * 60;
                 this.doStartTimer();
     },
     
     doTimePreset120: function() {
-                this.timerDuration = 120;
+                this.timerDuration = 120 * 60;
                 this.doStartTimer();
     },
     
     doTimePreset90: function() {
-                this.timerDuration = 90;
+                this.timerDuration = 90 * 60;
                 this.doStartTimer();
     },
     
     doTimePreset60: function() {
-                this.timerDuration = 60;
+                this.timerDuration = 60 * 60;
                 this.doStartTimer();
     },
     
     doTimePreset45: function() {
-                this.timerDuration = 45;
+                this.timerDuration = 45 * 60;
                 this.doStartTimer();
     },
     
     doTimePreset30: function() {
-                this.timerDuration = 30;
+                this.timerDuration = 30 * 60;
                 this.doStartTimer();
     },
     
     doTimePreset20: function() {
-                this.timerDuration = 20;
+                this.timerDuration = 20 * 60;
                 this.doStartTimer();
     },
     
     doTimePreset15: function() {
-                this.timerDuration = 15;
+                this.timerDuration = 15 * 60;
                 this.doStartTimer();
     },
     
     doTimePreset10: function() {
-                this.timerDuration = 10;
+                this.timerDuration = 10 * 60;
                 this.doStartTimer();
     },
     
     doTimePreset5: function() {
-                this.timerDuration = 5;
+                this.timerDuration = 5 * 60;
                 this.doStartTimer();
     },
     
     doTimePreset3: function() {
-                this.timerDuration = 3;
+                this.timerDuration = 3 * 60;
                 this.doStartTimer();
     },
     
     doTimePreset1: function() {
-                this.timerDuration = 1;
+                this.timerDuration = 1 * 60;
                 this.doStartTimer();
     },
     
@@ -277,16 +277,9 @@ MyApplet.prototype = {
         this.timerStopped = false;
         this.timerSwitch.setToggleState(true);
         this.startTime = this.getCurrentTime();
-        this.endTime = this.startTime + this.timerDuration *  60 * 1000;
-        
-        this.timerMenuItem.label.text = "Minutes: " + this.timerDuration;
-        if (AppOptions.LabelOn) {
-            this.set_applet_label(this.timerDuration.toString());
-        }  
- 
-        let timeStr = "Timer: " + this.timerDuration + " min.";
-        this.set_applet_tooltip(_(timeStr));
-        Mainloop.timeout_add_seconds(1, Lang.bind(this, this.doUpdateUI));
+        this.endTime = this.startTime + this.timerDuration * 1000;
+
+        this.doUpdateUI();
     },
     
     getCurrentTime: function() {
@@ -295,12 +288,14 @@ MyApplet.prototype = {
 	    return x;
     },
 
-    doStopTimer: function() {
+    doStopTimer: function() { 
         this.timerStopped = true;
         this.set_applet_icon_path(AppletDir + "/" + AppOptions.AppIcon);
      
         this.timerSwitch.setToggleState(false);
-        this.set_applet_tooltip(_("Timer: " + this.timerDuration + " min. OFF"));
+
+        let timeStr = Math.floor(this.timerDuration / 60) + " min." + this.timerDuration % 60 + " sec.";
+        this.set_applet_tooltip(_("Timer: " + timrStr + " OFF"));
     },
     
     doUpdateUI: function() {
@@ -310,13 +305,13 @@ MyApplet.prototype = {
             this.doTimerExpired();
             return;
         }
-        this.timerDuration = Math.round( (this.endTime - this.getCurrentTime()) / 60000);
+        this.timerDuration = Math.round( (this.endTime - this.getCurrentTime()) / 1000);
         
-        this.timerMenuItem.label.text = "Minutes: " + this.timerDuration; 
-        let timeStr = "Timer: " + this.timerDuration + " min.";
-        this.set_applet_tooltip(_(timeStr));
+        this.timerMenuItem.label.text = Math.floor(this.timerDuration / 60) + " Minutes " + this.timerDuration % 60 + " Seconds"; 
+        let timeStr = Math.floor(this.timerDuration / 60) + " min." + this.timerDuration % 60 + " sec.";
+        this.set_applet_tooltip(_("Timer: " + timeStr));
         if (AppOptions.LabelOn) {
-            this.set_applet_label(this.timerDuration.toString());
+            this.set_applet_label(timeStr);
         }  
               
         Mainloop.timeout_add_seconds(1, Lang.bind(this, this.doUpdateUI));
@@ -355,11 +350,11 @@ MyApplet.prototype = {
     sliderChanged: function(slider, value) {
         this.timerStopped = true;
         let position = parseFloat(value);
-        this.timerDuration = Math.round(position/1.65 * 100);
-        if (this.timerDuration > 60) this.timerDuration = 60;
-        this.timerMenuItem.label.text = "Minutes: " + this.timerDuration;  
-        let timeStr = "Timer: " + this.timerDuration + " min.";
-        this.set_applet_tooltip(_(timeStr));
+        this.timerDuration = Math.round(position/1.65 * 100 * 60);
+        if (this.timerDuration > 3600) this.timerDuration = 3600;
+        this.timerMenuItem.label.text = Math.floor(this.timerDuration / 60) + " Minutes " + this.timerDuration % 60 + " Seconds"; 
+        let timeStr = Math.floor(this.timerDuration / 60) + " min." + this.timerDuration % 60 + " sec.";
+        this.set_applet_tooltip(_("Timer: " + timeStr));
     },
     
     sliderReleased: function(slider, value) {   
