@@ -15,12 +15,11 @@ const Mainloop = imports.mainloop;
 const ModalDialog = imports.ui.modalDialog;
 const PanelMenu = imports.ui.panelMenu;
 
-const AppletMeta = imports.ui.appletManager.applets['timer-notifications@markbokil.com'];
-const AppletDir = imports.ui.appletManager.appletMeta['timer-notifications@markbokil.com'].path;
-const ConfigFile = GLib.build_filenamev([global.userdatadir, 'applets/timer-notifications@markbokil.com/config.js']);
+const AppletMeta = imports.ui.appletManager.applets['countdown-timer@vandra.hu'];
+const AppletDir = imports.ui.appletManager.appletMeta['countdown-timer@vandra.hu'].path + "/assets/";
+const ConfigFile = GLib.build_filenamev([global.userdatadir, 'applets/countdown-timer@vandra.hu/config.js']);
 const AppOptions = AppletMeta.config.Options;
 const OpenFileCmd = "xdg-open";
-    
     
 function ConfirmDialog(){
     this._init();
@@ -256,7 +255,7 @@ MyApplet.prototype = {
     
     doTimerSwitch: function(item) {
         if (item.state) {
-            if (this.timerDuration == 0) {
+            if (this.timerDuration <= 0) {
                 this.timerSwitch.setToggleState(false);
                 
                 return;
@@ -290,12 +289,11 @@ MyApplet.prototype = {
 
     doStopTimer: function() { 
         this.timerStopped = true;
-        this.set_applet_icon_path(AppletDir + "/" + AppOptions.AppIcon);
-     
+        this.set_applet_icon_path(AppletDir + "/" + AppOptions.AppIcon);     
         this.timerSwitch.setToggleState(false);
 
         let timeStr = Math.floor(this.timerDuration / 60) + " min." + this.timerDuration % 60 + " sec.";
-        this.set_applet_tooltip(_("Timer: " + timrStr + " OFF"));
+        this.set_applet_tooltip(_("Timer: " + timeStr + " OFF"));
     },
     
     doUpdateUI: function() {
@@ -305,7 +303,7 @@ MyApplet.prototype = {
             this.doTimerExpired();
             return;
         }
-        this.timerDuration = Math.round( (this.endTime - this.getCurrentTime()) / 1000);
+        this.timerDuration = Math.max(0, Math.round( (this.endTime - this.getCurrentTime()) / 1000));
         
         this.timerMenuItem.label.text = Math.floor(this.timerDuration / 60) + " Minutes " + this.timerDuration % 60 + " Seconds"; 
         let timeStr = Math.floor(this.timerDuration / 60) + " min." + this.timerDuration % 60 + " sec.";
@@ -318,9 +316,12 @@ MyApplet.prototype = {
     },
     
     doTimerExpired: function() {
+        global.log("doTimerExpired")
         this.alarmOn = true;
         this.doStopTimer();
+        global.log("timerStopped")
         this.set_applet_icon_path(AppletDir + "/" + AppOptions.AppIconReversed);
+        global.log("icon set")
         if (AppOptions.LabelOn) {
             this.set_applet_label(""); // remove label on panel
         }  
