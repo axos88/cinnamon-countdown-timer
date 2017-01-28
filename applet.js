@@ -297,10 +297,16 @@ MyApplet.prototype = {
     },
     
     createContextMenu: function () {
-        this.edit_menu_item = new Applet.MenuItem(_('Edit Options'), Gtk.STOCK_EDIT, 
-            Lang.bind(this, this.editProperties)); 
-        this.reload_menu_item = new Applet.MenuItem(_('Restart Cinnamon'), Gtk.STOCK_REFRESH, 
-            Lang.bind(this, this.doRestart));        
+        this.edit_menu_item = new PopupMenu.PopupIconMenuItem( _("Edit Options"), "preferences-system", St.IconType.SYMBOLIC);
+        this.reload_menu_item = new PopupMenu.PopupIconMenuItem(_("Restart Cinnamon"), "view-refresh", St.IconType.SYMBOLIC);
+
+        this.edit_menu_item.connect('activate', Lang.bind(this, function() {
+            this.editProperties();
+        }));
+        this.reload_menu_item.connect('activate', Lang.bind(this, function() {
+            this.doRestart();
+        }));
+
         this._applet_context_menu.addMenuItem(this.edit_menu_item);
         this._applet_context_menu.addMenuItem(this.reload_menu_item);
        
