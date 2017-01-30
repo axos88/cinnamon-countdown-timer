@@ -128,7 +128,9 @@ MyApplet.prototype = {
     
     on_orientation_changed: function (orientation) {
         this._orientation = orientation;
-        this._initContextMenu();
+        // not defined in cinna 3.2 and above
+        if (typeof this._initContextMenu === "function")
+            this._initContextMenu();
     },
 
     buildTimePresetMenu: function() {
