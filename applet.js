@@ -27,7 +27,6 @@ Number.prototype.pad = function(size) {
   return s;
 }
 
-    
 function ConfirmDialog(){
     this._init();
 }
@@ -36,34 +35,28 @@ ConfirmDialog.prototype = {
     __proto__: ModalDialog.ModalDialog.prototype,
 
     _init: function(){
-	ModalDialog.ModalDialog.prototype._init.call(this);
-	let label = new St.Label({text: AppOptions.ConfirmMessage + "\n\n", style_class: "centered"});
-	this.contentLayout.add(label);
+        ModalDialog.ModalDialog.prototype._init.call(this);
+        let label = new St.Label({text: AppOptions.ConfirmMessage + "\n\n", style_class: "timer-dialog-label"});
+        this.contentLayout.add(label);
 
-	this.setButtons([
-	    {
-	    style_class: "centered",
-		label: _("Okay"),
-		action: Lang.bind(this, function(){
-            this.close();
-        
-		})
-	    }
-	]);
+        this.setButtons([
+            {
+                label: _("Okay"),
+                action: Lang.bind(this, function(){
+                    this.close();
+                })
+            }
+        ]);
     },	
 }
-
 
 function PopupMenuItem(label, icon, callback) {
     this._init(label, icon, callback);
 }
 
-
 function MyApplet(orientation) {
     this._init(orientation);
 }
-
-
 
 MyApplet.prototype = {
     __proto__: Applet.TextIconApplet.prototype,
@@ -84,11 +77,14 @@ MyApplet.prototype = {
             this.timerDuration = 0;
             this.timerStopped = true;
             this.alarmOn = false;
+            this.state = false;
             
             this.menuManager = new PopupMenu.PopupMenuManager(this);
             this._orientation = orientation;
             this.menu = new Applet.AppletPopupMenu(this, orientation);
             this.menuManager.addMenu(this.menu);     
+            this.set_applet_icon_symbolic_name("alarm");
+            this.actor.add_style_class_name("timer");
                                                                 
             
             this.timerSwitch = new PopupMenu.PopupSwitchMenuItem(_("Timer"));
@@ -212,8 +208,9 @@ MyApplet.prototype = {
     doUpdateUI: function() { 
         this.timerSwitch.setToggleState(!this.timerStopped);
 
-        let state = this.alarmOn ? "Expired" : (this.timerStopped ? "Stopped" : "Started")
-        this.set_applet_icon_path(AssetDir + "/" + AppOptions.AppIcon[state]);     
+        if (this.state) this.actor.remove_style_class_name("timer-" + this.state);
+        this.state = this.alarmOn ? "expired" : (this.timerStopped ? "stopped" : "running")
+        this.actor.add_style_class_name("timer-" + this.state);
 
         let hr = Math.floor(this.timerDuration / 3600)
         let min = Math.floor((this.timerDuration % 3600) / 60)

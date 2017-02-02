@@ -16,12 +16,6 @@
     LabelOn: true, //true shows minutes in panel 
     SoundPath: "phone-incoming-call.ogg",
     
-    AppIcon: {
-      Stopped: "Alarm_clock_symbolized16.svg", // stopped
-      Running: "Alarm_clock_symbolized_concentric16.svg", //timer running
-      Expired: "Alarm_clock_symbolized_reversed16.svg" //time expired (alarm)
-    },
-
     SliderIntervals: [
       { min: 0, max: 300, step: 15 },
       { min: 300, max: 1800, step: 60 },
