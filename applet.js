@@ -14,12 +14,21 @@ const Gtk = imports.gi.Gtk;
 const Mainloop = imports.mainloop;
 const ModalDialog = imports.ui.modalDialog;
 const PanelMenu = imports.ui.panelMenu;
+const Gettext = imports.gettext;
 
 const AppletMeta = imports.ui.appletManager.applets['countdown-timer@vandra.hu'];
 const AssetDir = imports.ui.appletManager.appletMeta['countdown-timer@vandra.hu'].path + "/assets";
 const ConfigFile = GLib.build_filenamev([global.userdatadir, 'applets/countdown-timer@vandra.hu/config.js']);
 const AppOptions = AppletMeta.config.Options;
 const OpenFileCmd = "xdg-open";
+
+
+// l10n/translation support
+Gettext.bindtextdomain(UUID, GLib.get_home_dir() + "/.local/share/locale");
+
+function _(str) {
+  return Gettext.dgettext(UUID, str);
+}
 
 Number.prototype.pad = function(size) {
   var s = String(this);
